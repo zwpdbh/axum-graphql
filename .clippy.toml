@@ -1,1 +1,2 @@
+# setup clipy: https://rust-lang.github.io/rust-clippy/master/index.html
 cognitive-complexity-threshold = 30

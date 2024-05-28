@@ -12,7 +12,8 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(graphql_playground).post(graphql_handler))
-        .route("/health", get(health));
+        .route("/health", get(health))
+        .layer(Extension(schema));
 
     Server::bind(&"0.0.0.0:8000".parse().unwrap())
         .serve(app.into_make_service())
