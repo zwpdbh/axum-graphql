@@ -71,7 +71,8 @@ async fn main() {
                     .try_init()
                     .expect("Failed to register tracer with registry"),
             }
-            info!("Service starting");
+            let address = format!("0.0.0.0:{}", port);
+            info!("Service starting at address: {}", address);
 
             let app = Router::new()
                 .route("/", get(graphql_playground).post(graphql_handler))
@@ -80,7 +81,7 @@ async fn main() {
                 .route_layer(middleware::from_fn(track_metrics))
                 .layer(Extension(schema));
 
-            Server::bind(&format!("0.0.0.0:{}", port).parse().unwrap())
+            Server::bind(&address.parse().unwrap())
                 .serve(app.into_make_service())
                 .with_graceful_shutdown(shutdown_signal())
                 .await
