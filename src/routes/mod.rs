@@ -10,6 +10,10 @@ use crate::model::ServiceSchema;
 use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 
+use opentelemetry::trace::TraceContextExt;
+use tracing::{info, span, Instrument, Level};
+use tracing_opentelemetry::OpenTelemetrySpanExt;
+
 #[derive(Serialize)]
 struct Health {
     healthy: bool,
@@ -31,5 +35,22 @@ pub(crate) async fn graphql_handler(
     Extension(schema): Extension<ServiceSchema>, // (2)
     req: GraphQLRequest,
 ) -> GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
+    let span = span!(Level::INFO, "graphql_execution"); // (1)
+    info!("Processing GraphQL request");
+
+    let response = async move { schema.execute(req.into_inner()).await } // (2)
+        .instrument(span.clone())
+        .await;
+    info!("Processing GraphQL request finished");
+
+    response
+        .extension(
+            // (3)
+            "traceId",
+            async_graphql::Value::String(format!(
+                "{}",
+                span.context().span().span_context().trace_id()
+            )),
+        )
+        .into()
 }
