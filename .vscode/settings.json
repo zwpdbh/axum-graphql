@@ -1,0 +1,31 @@
+{
+  "[rust]": {
+    "editor.semanticHighlighting.enabled": true,
+    "editor.inlayHints.enabled": "off",
+    "editor.parameterHints.enabled": false,
+    "editor.formatOnSave": true,
+    "editor.guides.indentation": false,
+    "editor.tabSize": 4,
+    "editor.suggest.filterGraceful": true,
+    "editor.suggest.showSnippets": true,
+    "editor.suggest.showKeywords": true,
+    "editor.suggest.matchOnWordStartOnly": true,
+    "editor.snippets.codeActions.enabled": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.suggest.preview": true,
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.acceptSuggestionOnCommitCharacter": true,
+    "editor.acceptSuggestionOnEnter": "on",
+    "editor.suggest.localityBonus": true,
+    "editor.formatOnPaste": true,
+    "emmet.triggerExpansionOnTab": true,
+    "editor.suggestSelection": "recentlyUsedByPrefix",
+    "editor.wordBasedSuggestions": "matchingDocuments",
+    "editor.quickSuggestions": {
+      "comments": "inline",
+      "strings": "on",
+      "other": "on"
+    },
+  },
+  "rust-analyzer.showUnlinkedFileNotification": false,
+}
