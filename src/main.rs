@@ -8,7 +8,6 @@ use async_graphql::{EmptyMutation, EmptySubscription, Schema};
 use axum::middleware;
 use axum::{extract::Extension, routing::get, Router, Server};
 use clap::Parser;
-use dotenv::dotenv;
 use std::future::ready;
 
 use tokio::signal;
@@ -55,12 +54,15 @@ async fn main() {
 
     let args = Arguments::parse();
     match args.cmd {
-        SubCommand::StartServer { port } => {
+        SubCommand::StartServer {
+            port,
+            enable_jaeger,
+        } => {
             let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
             let prometheus_recorder = create_prometheus_recorder();
             let registry = Registry::default().with(tracing_subscriber::fmt::layer().pretty());
 
-            match create_tracer_from_env() {
+            match create_tracer_from_env(enable_jaeger.unwrap_or(false)) {
                 Some(tracer) => registry
                     .with(tracing_opentelemetry::layer().with_tracer(tracer))
                     .try_init()

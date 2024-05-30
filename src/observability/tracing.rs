@@ -11,13 +11,8 @@ struct JaegerConfig {
     jaeger_tracing_service_name: String,
 }
 
-pub fn create_tracer_from_env() -> Option<Tracer> {
-    let jaeger_enabled: bool = env::var("JAEGER_ENABLED")
-        .unwrap_or_else(|_| "false".into())
-        .parse()
-        .unwrap();
-
-    if jaeger_enabled {
+pub fn create_tracer_from_env(enable_jaeger: bool) -> Option<Tracer> {
+    if enable_jaeger {
         let config = get_jaeger_config_from_env();
         Some(init_tracer(config))
     } else {
@@ -42,6 +37,7 @@ fn init_tracer(config: JaegerConfig) -> Tracer {
 
 fn get_jaeger_config_from_env() -> JaegerConfig {
     JaegerConfig {
+        // The JAEGER_AGENT_HOST and JAEGER_AGENT_PORT need to match the setting in docker-compose file.
         jaeger_agent_host: env::var("JAEGER_AGENT_HOST").unwrap_or_else(|_| "localhost".into()),
         jaeger_agent_port: env::var("JAEGER_AGENT_PORT").unwrap_or_else(|_| "6831".into()),
         jaeger_tracing_service_name: env::var("TRACING_SERVICE_NAME")
