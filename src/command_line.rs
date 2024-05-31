@@ -12,13 +12,8 @@ pub enum SubCommand {
     StartServer {
         #[arg(long, short)]
         port: String,
-        #[arg(long, short)]
-        enable_jaeger: Option<bool>,
     },
-    Ex01 {
-        #[arg(short, long)]
-        id: String,
-    },
+    Sqlx,
     Ex02 {
         #[clap(subcommand)]
         case: ExCase,
