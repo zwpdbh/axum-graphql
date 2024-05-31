@@ -12,9 +12,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
   adminer:
+    # visit http://localhost:8080/?pgsql=db. 
+    # Notice the server name is "db" should match the name defined above.
     image: adminer
     ports:
       - 8080:8080
+    depends_on:
+      - db
 
 volumes:
   postgres_data:

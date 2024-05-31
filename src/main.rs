@@ -1,4 +1,5 @@
 use crate::command_line::Arguments;
+use crate::command_line::MigrationFolder;
 use crate::command_line::SubCommand;
 use crate::model::QueryRoot;
 use crate::observability::metrics::{create_prometheus_recorder, track_metrics};
@@ -74,10 +75,15 @@ async fn main() {
                 .await
                 .unwrap();
         }
-        SubCommand::Sql { case } => match case {
+        SubCommand::Sqlx { case } => match case {
             SqlCase::Test => {
                 db::test().await.unwrap();
             }
+            SqlCase::Migrate { folder } => match folder {
+                MigrationFolder::Bookstore => {
+                    db::migrate_bookstore().await.unwrap();
+                }
+            },
             _ => {
                 todo!("not implemented")
             }

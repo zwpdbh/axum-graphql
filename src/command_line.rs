@@ -13,23 +13,33 @@ pub enum SubCommand {
         #[arg(long, short)]
         port: String,
     },
-    Sql {
+    Sqlx {
         #[clap(subcommand)]
         case: SqlCase,
     },
     Ex03 {
-        case: ValueEnumCase,
+        case: MigrationFolder,
     },
 }
 
 #[derive(Subcommand, Debug, Clone)]
 pub enum SqlCase {
     Test,
+    Migrate {
+        #[arg(long, short)]
+        folder: MigrationFolder,
+    },
     Case01 {
         #[arg(short, long)]
         name: String,
     },
 }
+
+#[derive(Debug, Clone, ValueEnum)]
+pub enum MigrationFolder {
+    Bookstore,
+}
+
 #[derive(Debug, Clone, ValueEnum)]
 pub enum ValueEnumCase {
     Case01,
