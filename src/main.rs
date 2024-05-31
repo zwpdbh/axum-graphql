@@ -1,4 +1,5 @@
 use crate::command_line::Arguments;
+use crate::command_line::BookStoreEx;
 use crate::command_line::MigrationFolder;
 use crate::command_line::SubCommand;
 use crate::model::QueryRoot;
@@ -84,9 +85,14 @@ async fn main() {
                     db::migrate_bookstore().await.unwrap();
                 }
             },
-            _ => {
-                todo!("not implemented")
-            }
+            SqlCase::Bookstore { example } => match example {
+                BookStoreEx::Create => {
+                    db::bookstore::create_book_example().await.unwrap();
+                }
+                BookStoreEx::Update => {
+                    db::bookstore::update_book_example().await.unwrap();
+                }
+            },
         },
         _ => todo!("not implemented"),
     }

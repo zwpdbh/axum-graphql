@@ -29,15 +29,21 @@ pub enum SqlCase {
         #[arg(long, short)]
         folder: MigrationFolder,
     },
-    Case01 {
-        #[arg(short, long)]
-        name: String,
+    Bookstore {
+        #[arg(long, short)]
+        example: BookStoreEx,
     },
 }
 
 #[derive(Debug, Clone, ValueEnum)]
 pub enum MigrationFolder {
     Bookstore,
+}
+
+#[derive(Debug, Clone, ValueEnum)]
+pub enum BookStoreEx {
+    Create,
+    Update,
 }
 
 #[derive(Debug, Clone, ValueEnum)]

@@ -2,6 +2,8 @@ use sqlx::Row;
 use std::error::Error;
 use tracing::info;
 
+pub mod bookstore;
+
 const DB_FOR_DEV: &str = "postgres://postgres:postgres@localhost:5432/myapp";
 
 pub async fn test() -> Result<(), Box<dyn Error>> {
