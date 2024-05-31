@@ -13,10 +13,9 @@ pub enum SubCommand {
         #[arg(long, short)]
         port: String,
     },
-    Sqlx,
-    Ex02 {
+    Sql {
         #[clap(subcommand)]
-        case: ExCase,
+        case: SqlCase,
     },
     Ex03 {
         case: ValueEnumCase,
@@ -24,12 +23,12 @@ pub enum SubCommand {
 }
 
 #[derive(Subcommand, Debug, Clone)]
-pub enum ExCase {
+pub enum SqlCase {
+    Test,
     Case01 {
         #[arg(short, long)]
         name: String,
     },
-    Case02,
 }
 #[derive(Debug, Clone, ValueEnum)]
 pub enum ValueEnumCase {

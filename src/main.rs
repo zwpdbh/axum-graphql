@@ -8,12 +8,14 @@ use async_graphql::{EmptyMutation, EmptySubscription, Schema};
 use axum::middleware;
 use axum::{extract::Extension, routing::get, Router, Server};
 use clap::Parser;
+use command_line::SqlCase;
 use dotenv::dotenv;
 use std::future::ready;
 use tokio::signal;
 use tracing::info;
 
 mod command_line;
+mod db;
 mod model;
 mod observability;
 mod routes;
@@ -72,9 +74,14 @@ async fn main() {
                 .await
                 .unwrap();
         }
-        SubCommand::Sqlx => {
-            info!("todo");
-        }
-        _ => unreachable!("not implemented"),
+        SubCommand::Sql { case } => match case {
+            SqlCase::Test => {
+                db::test().await.unwrap();
+            }
+            _ => {
+                todo!("not implemented")
+            }
+        },
+        _ => todo!("not implemented"),
     }
 }

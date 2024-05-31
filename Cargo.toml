@@ -21,3 +21,8 @@ opentelemetry-jaeger = { version = "0.19.0", features = ["rt-tokio"] }
 tracing = "0.1.37"
 tracing-opentelemetry = "0.21.0"
 tracing-subscriber = { version = "0.3.17", features = ["std", "env-filter"] }
+sqlx = { version = "0.7", features = [
+  "postgres",
+  "runtime-tokio",
+  "tls-rustls",
+] }

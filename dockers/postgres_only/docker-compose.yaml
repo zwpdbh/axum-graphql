@@ -1,6 +1,6 @@
-# docker compose up
+# sudo docker compose -f dockers/postgres_only/docker-compose.yaml up
 services:
-  postgres:
+  db:
     image: postgres:15
     container_name: postgres
     environment:
@@ -11,6 +11,10 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
 
 volumes:
   postgres_data:
