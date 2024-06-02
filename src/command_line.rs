@@ -12,33 +12,49 @@ pub enum SubCommand {
     StartServer {
         #[arg(long, short)]
         port: String,
-        #[arg(long, short)]
-        enable_jaeger: Option<bool>,
     },
-    Ex01 {
-        #[arg(short, long)]
-        id: String,
-    },
-    Ex02 {
+    Sqlx {
         #[clap(subcommand)]
-        case: ExCase,
+        case: SqlCase,
     },
     Ex03 {
-        case: ValueEnumCase,
+        case: MigrationFolder,
     },
 }
 
 #[derive(Subcommand, Debug, Clone)]
-pub enum ExCase {
-    Case01 {
-        #[arg(short, long)]
-        name: String,
+pub enum SqlCase {
+    Test,
+    Migrate {
+        #[arg(long, short)]
+        folder: MigrationFolder,
     },
-    Case02,
+    Bookstore {
+        #[clap(subcommand)]
+        example: BookstoreEx,
+    },
 }
+
 #[derive(Debug, Clone, ValueEnum)]
-pub enum ValueEnumCase {
-    Case01,
-    Case02,
-    Case03,
+pub enum MigrationFolder {
+    Bookstore,
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum BookstoreEx {
+    Create,
+    Update,
+    Read {
+        #[arg(short)]
+        v: ExVersion,
+    },
+    Transaction,
+}
+
+#[derive(Debug, Clone, ValueEnum)]
+pub enum ExVersion {
+    V1,
+    V2,
+    V3,
+    V4,
 }

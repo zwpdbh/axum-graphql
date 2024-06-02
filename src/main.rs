@@ -1,22 +1,23 @@
 use crate::command_line::Arguments;
+use crate::command_line::BookstoreEx;
+use crate::command_line::MigrationFolder;
 use crate::command_line::SubCommand;
 use crate::model::QueryRoot;
 use crate::observability::metrics::{create_prometheus_recorder, track_metrics};
-use crate::observability::tracing::create_tracer_from_env;
+use crate::observability::tracing::setup_tracer;
 use crate::routes::{graphql_handler, graphql_playground, health};
 use async_graphql::{EmptyMutation, EmptySubscription, Schema};
 use axum::middleware;
 use axum::{extract::Extension, routing::get, Router, Server};
 use clap::Parser;
+use command_line::SqlCase;
+use dotenv::dotenv;
 use std::future::ready;
-
 use tokio::signal;
 use tracing::info;
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::Registry;
 
 mod command_line;
+mod db;
 mod model;
 mod observability;
 mod routes;
@@ -50,28 +51,17 @@ async fn shutdown_signal() {
 
 #[tokio::main]
 async fn main() {
-    // dotenv().ok();
+    let _ = dotenv().ok();
+    let _ = setup_tracer();
 
     let args = Arguments::parse();
     match args.cmd {
-        SubCommand::StartServer {
-            port,
-            enable_jaeger,
-        } => {
+        SubCommand::StartServer { port } => {
             let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
             let prometheus_recorder = create_prometheus_recorder();
-            let registry = Registry::default().with(tracing_subscriber::fmt::layer().pretty());
 
-            match create_tracer_from_env(enable_jaeger.unwrap_or(false)) {
-                Some(tracer) => registry
-                    .with(tracing_opentelemetry::layer().with_tracer(tracer))
-                    .try_init()
-                    .expect("Failed to register tracer with registry"),
-                None => registry
-                    .try_init()
-                    .expect("Failed to register tracer with registry"),
-            }
-            info!("Service starting");
+            let address = format!("0.0.0.0:{}", port);
+            info!("Service starting at address: {}", address);
 
             let app = Router::new()
                 .route("/", get(graphql_playground).post(graphql_handler))
@@ -80,14 +70,42 @@ async fn main() {
                 .route_layer(middleware::from_fn(track_metrics))
                 .layer(Extension(schema));
 
-            Server::bind(&format!("0.0.0.0:{}", port).parse().unwrap())
+            Server::bind(&address.parse().unwrap())
                 .serve(app.into_make_service())
                 .with_graceful_shutdown(shutdown_signal())
                 .await
                 .unwrap();
         }
-        _ => {
-            unreachable!("not implemented")
+        SubCommand::Sqlx { case } => {
+            let pool = sqlx::postgres::PgPool::connect(db::DB_FOR_DEV)
+                .await
+                .unwrap();
+
+            match case {
+                SqlCase::Test => {
+                    db::test(&pool).await.unwrap();
+                }
+                SqlCase::Migrate { folder } => match folder {
+                    MigrationFolder::Bookstore => {
+                        let _ = db::migrate_bookstore(&pool).await.unwrap();
+                    }
+                },
+                SqlCase::Bookstore { example } => match example {
+                    BookstoreEx::Create => {
+                        let _ = db::bookstore::create_book_example(&pool).await.unwrap();
+                    }
+                    BookstoreEx::Update => {
+                        let _ = db::bookstore::update_book_example(&pool).await.unwrap();
+                    }
+                    BookstoreEx::Read { v } => {
+                        let _ = db::bookstore::read_book_example(&pool, v).await.unwrap();
+                    }
+                    BookstoreEx::Transaction => {
+                        let _ = db::bookstore::transaction(&pool).await.unwrap();
+                    }
+                },
+            }
         }
+        _ => todo!("not implemented"),
     }
 }

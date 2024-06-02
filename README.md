@@ -24,6 +24,13 @@ active toolchain
 rustc 1.72.0 (5680fa18f 2023-08-23)
 ```
 
+## How to do query verification using sqlx
+
+- Make sure `sqlx-cli` is installed, otherwise run: `cargo install sqlx-cli`.
+- Set up `DATABASE_URL` like: `export DATABASE_URL="postgres://postgres:postgres@localhost:5432/myapp"`
+- Run `cargo sqlx prepare`
+
 ## References
 
 - [How to Build a Powerful GraphQL API with Rust](https://oliverjumpertz.com/blog/how-to-build-a-powerful-graphql-api-with-rust/)
+- [SQLx is my favorite PostgreSQL driver to use with Rust.](https://www.youtube.com/watch?v=TCERYbgvbq0)

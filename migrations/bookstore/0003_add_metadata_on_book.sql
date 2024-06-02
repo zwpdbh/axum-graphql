@@ -1,0 +1,4 @@
+ALTER TABLE
+  book
+ADD
+  COLUMN metadata JSONB;
