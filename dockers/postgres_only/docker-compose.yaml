@@ -14,6 +14,7 @@ services:
   adminer:
     # visit http://localhost:8080/?pgsql=db. 
     # Notice:  
+    # select system as PostgreSQL
     # the server name should be "db" which matches the name defined above.
     # the database should be "myapp".
     image: adminer

@@ -48,6 +48,7 @@ pub enum BookstoreEx {
         #[arg(short)]
         v: ExVersion,
     },
+    Transaction,
 }
 
 #[derive(Debug, Clone, ValueEnum)]

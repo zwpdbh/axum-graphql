@@ -76,27 +76,36 @@ async fn main() {
                 .await
                 .unwrap();
         }
-        SubCommand::Sqlx { case } => match case {
-            SqlCase::Test => {
-                db::test().await.unwrap();
+        SubCommand::Sqlx { case } => {
+            let pool = sqlx::postgres::PgPool::connect(db::DB_FOR_DEV)
+                .await
+                .unwrap();
+
+            match case {
+                SqlCase::Test => {
+                    db::test(&pool).await.unwrap();
+                }
+                SqlCase::Migrate { folder } => match folder {
+                    MigrationFolder::Bookstore => {
+                        let _ = db::migrate_bookstore(&pool).await.unwrap();
+                    }
+                },
+                SqlCase::Bookstore { example } => match example {
+                    BookstoreEx::Create => {
+                        let _ = db::bookstore::create_book_example(&pool).await.unwrap();
+                    }
+                    BookstoreEx::Update => {
+                        let _ = db::bookstore::update_book_example(&pool).await.unwrap();
+                    }
+                    BookstoreEx::Read { v } => {
+                        let _ = db::bookstore::read_book_example(&pool, v).await.unwrap();
+                    }
+                    BookstoreEx::Transaction => {
+                        let _ = db::bookstore::transaction(&pool).await.unwrap();
+                    }
+                },
             }
-            SqlCase::Migrate { folder } => match folder {
-                MigrationFolder::Bookstore => {
-                    db::migrate_bookstore().await.unwrap();
-                }
-            },
-            SqlCase::Bookstore { example } => match example {
-                BookstoreEx::Create => {
-                    db::bookstore::create_book_example().await.unwrap();
-                }
-                BookstoreEx::Update => {
-                    db::bookstore::update_book_example().await.unwrap();
-                }
-                BookstoreEx::Read { v } => {
-                    db::bookstore::read_book_example(v).await.unwrap();
-                }
-            },
-        },
+        }
         _ => todo!("not implemented"),
     }
 }

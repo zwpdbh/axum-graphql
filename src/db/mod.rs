@@ -4,11 +4,10 @@ use tracing::info;
 
 pub mod bookstore;
 
-const DB_FOR_DEV: &str = "postgres://postgres:postgres@localhost:5432/myapp";
+pub const DB_FOR_DEV: &str = "postgres://postgres:postgres@localhost:5432/myapp";
 
-pub async fn test() -> Result<(), Box<dyn Error>> {
-    let pool = sqlx::postgres::PgPool::connect(DB_FOR_DEV).await?;
-    let res = sqlx::query("SELECT 1 + 1 as sum").fetch_one(&pool).await?;
+pub async fn test(pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
+    let res = sqlx::query("SELECT 1 + 1 as sum").fetch_one(pool).await?;
 
     let sum: i32 = res.get("sum");
     info!("1 + 1 = {sum}");
@@ -16,9 +15,29 @@ pub async fn test() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub async fn migrate_bookstore() -> Result<(), Box<dyn Error>> {
-    let pool = sqlx::postgres::PgPool::connect(DB_FOR_DEV).await?;
-    sqlx::migrate!("migrations/bookstore").run(&pool).await?;
+// cargo run -- sqlx migrate --folder bookstore
+pub async fn migrate_bookstore(pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
+    let _ = delete_all_tables(&pool).await.unwrap();
+    sqlx::migrate!("migrations/bookstore").run(pool).await?;
+
+    Ok(())
+}
+
+async fn delete_all_tables(pool: &sqlx::PgPool) -> Result<(), sqlx::Error> {
+    // sqlx::PgPool already specify the db
+    let sql = r#"
+        DO $$ DECLARE
+            r RECORD;
+        BEGIN
+            -- Iterate over all tables in the public schema
+            FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+                -- Drop each table
+                EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+            END LOOP;
+        END $$;
+    "#;
+
+    sqlx::query(&sql).execute(pool).await?;
 
     Ok(())
 }
