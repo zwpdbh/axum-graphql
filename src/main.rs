@@ -1,5 +1,5 @@
 use crate::command_line::Arguments;
-use crate::command_line::BookStoreEx;
+use crate::command_line::BookstoreEx;
 use crate::command_line::MigrationFolder;
 use crate::command_line::SubCommand;
 use crate::model::QueryRoot;
@@ -86,11 +86,14 @@ async fn main() {
                 }
             },
             SqlCase::Bookstore { example } => match example {
-                BookStoreEx::Create => {
+                BookstoreEx::Create => {
                     db::bookstore::create_book_example().await.unwrap();
                 }
-                BookStoreEx::Update => {
+                BookstoreEx::Update => {
                     db::bookstore::update_book_example().await.unwrap();
+                }
+                BookstoreEx::Read { v } => {
+                    db::bookstore::read_book_example(v).await.unwrap();
                 }
             },
         },

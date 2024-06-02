@@ -30,8 +30,8 @@ pub enum SqlCase {
         folder: MigrationFolder,
     },
     Bookstore {
-        #[arg(long, short)]
-        example: BookStoreEx,
+        #[clap(subcommand)]
+        example: BookstoreEx,
     },
 }
 
@@ -40,10 +40,21 @@ pub enum MigrationFolder {
     Bookstore,
 }
 
-#[derive(Debug, Clone, ValueEnum)]
-pub enum BookStoreEx {
+#[derive(Debug, Clone, Subcommand)]
+pub enum BookstoreEx {
     Create,
     Update,
+    Read {
+        #[arg(short)]
+        v: ExVersion,
+    },
+}
+
+#[derive(Debug, Clone, ValueEnum, Subcommand)]
+pub enum ExVersion {
+    V1,
+    V2,
+    V3,
 }
 
 #[derive(Debug, Clone, ValueEnum)]
