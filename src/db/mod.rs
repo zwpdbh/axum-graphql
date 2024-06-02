@@ -15,7 +15,8 @@ pub async fn test(pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-// cargo run -- sqlx migrate --folder bookstore
+/// Example show how to delete all current tables and run migrations
+/// cargo run -- sqlx migrate --folder bookstore
 pub async fn migrate_bookstore(pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
     let _ = delete_all_tables(&pool).await.unwrap();
     sqlx::migrate!("migrations/bookstore").run(pool).await?;

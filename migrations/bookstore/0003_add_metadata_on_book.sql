@@ -1,4 +1,4 @@
 ALTER TABLE
   book
 ADD
-  COLUMN metadata VARCHAR;
+  COLUMN metadata JSONB;
