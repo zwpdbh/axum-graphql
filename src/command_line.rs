@@ -50,16 +50,10 @@ pub enum BookstoreEx {
     },
 }
 
-#[derive(Debug, Clone, ValueEnum, Subcommand)]
+#[derive(Debug, Clone, ValueEnum)]
 pub enum ExVersion {
     V1,
     V2,
     V3,
-}
-
-#[derive(Debug, Clone, ValueEnum)]
-pub enum ValueEnumCase {
-    Case01,
-    Case02,
-    Case03,
+    V4,
 }

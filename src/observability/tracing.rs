@@ -1,15 +1,8 @@
-use opentelemetry::sdk::trace::{self, Sampler};
-use opentelemetry::{
-    global, runtime::Tokio, sdk::propagation::TraceContextPropagator, sdk::trace::Tracer,
-};
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::Registry;
-
+use opentelemetry::sdk::trace::Tracer;
 use std::env;
+use tracing_subscriber::Layer;
 
 struct JaegerConfig {
-    // configure the tracer.
     jaeger_agent_host: String,
     jaeger_agent_port: String,
     jaeger_tracing_service_name: String,
@@ -30,6 +23,8 @@ pub fn create_tracer_from_env() -> Option<Tracer> {
 }
 
 fn init_tracer_with_jaeger(config: JaegerConfig) -> Tracer {
+    use opentelemetry::sdk::trace::{self, Sampler};
+    use opentelemetry::{global, runtime::Tokio, sdk::propagation::TraceContextPropagator};
     // ensures that tracing is propagated by the traceparent header
     global::set_text_map_propagator(TraceContextPropagator::new());
     opentelemetry_jaeger::new_agent_pipeline()
@@ -55,7 +50,18 @@ fn get_jaeger_config_from_env() -> JaegerConfig {
 }
 
 pub fn setup_tracer() {
-    let registry = Registry::default().with(tracing_subscriber::fmt::layer().pretty());
+    use tracing_subscriber::filter::EnvFilter;
+    use tracing_subscriber::layer::SubscriberExt;
+    use tracing_subscriber::util::SubscriberInitExt;
+    use tracing_subscriber::Registry;
+
+    let filter = EnvFilter::new("info");
+
+    let registry = Registry::default().with(
+        tracing_subscriber::fmt::layer()
+            .pretty()
+            .with_filter(filter),
+    );
 
     match create_tracer_from_env() {
         Some(tracer) => registry
