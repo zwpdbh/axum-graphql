@@ -45,7 +45,6 @@ pub(crate) async fn graphql_handler(
 
     response
         .extension(
-            // (3)
             "traceId",
             async_graphql::Value::String(format!(
                 "{}",

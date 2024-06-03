@@ -58,7 +58,13 @@ async fn main() {
     match args.cmd {
         // cargo run -- start-server --port 3000, visit http://localhost:3000/ to see the graphql playground
         SubCommand::StartServer { port } => {
-            let schema = Schema::build(Query, EmptyMutation, EmptySubscription).finish();
+            let pool = sqlx::postgres::PgPool::connect(db::DB_FOR_DEV)
+                .await
+                .unwrap();
+
+            let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
+                .data(pool)
+                .finish();
             let prometheus_recorder = create_prometheus_recorder();
 
             let address = format!("0.0.0.0:{}", port);

@@ -23,6 +23,7 @@ sqlx = { version = "0.7", features = [
   "uuid",
   "chrono",
   "json",
+  "bigdecimal",
 ] }
 opentelemetry = { version = "0.20.0", features = ["rt-tokio"] }
 opentelemetry-jaeger = { version = "0.19.0", features = ["rt-tokio"] }
@@ -30,3 +31,4 @@ tracing = "0.1.37"
 tracing-opentelemetry = "0.21.0"
 tracing-subscriber = { version = "0.3.17", features = ["std", "env-filter"] }
 futures = { version = "0.3" }
+chrono = { version = "0.4", features = ["serde"] }
