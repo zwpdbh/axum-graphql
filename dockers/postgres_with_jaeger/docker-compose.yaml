@@ -43,3 +43,7 @@ services:
 
 volumes:
   postgres_data:
+
+
+# Error response from daemon: Conflict. The container name "/jaeger" is already in use by container
+# Solution: sudo docker rm jaeger

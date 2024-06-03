@@ -56,7 +56,6 @@ async fn main() {
 
     let args = Arguments::parse();
     match args.cmd {
-        // cargo run -- start-server --port 3000, visit http://localhost:3000/ to see the graphql playground
         SubCommand::StartServer { port } => {
             let pool = sqlx::postgres::PgPool::connect(db::DB_FOR_DEV)
                 .await

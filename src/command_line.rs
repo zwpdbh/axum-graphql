@@ -9,6 +9,8 @@ pub struct Arguments {
 
 #[derive(Subcommand, Debug, Clone)]
 pub enum SubCommand {
+    /// Ex: cargo run -- start-server --port 3000,
+    /// then visit http://localhost:3000/ to see the graphql playground
     StartServer {
         #[arg(long, short)]
         port: String,
