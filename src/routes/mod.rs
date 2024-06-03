@@ -6,7 +6,7 @@ use axum::{
 };
 use serde::Serialize;
 
-use crate::model::ServiceSchema;
+use crate::graphql::ServiceSchema;
 use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 
@@ -32,13 +32,13 @@ pub(crate) async fn graphql_playground() -> impl IntoResponse {
 }
 
 pub(crate) async fn graphql_handler(
-    Extension(schema): Extension<ServiceSchema>, // (2)
+    Extension(schema): Extension<ServiceSchema>,
     req: GraphQLRequest,
 ) -> GraphQLResponse {
-    let span = span!(Level::INFO, "graphql_execution"); // (1)
+    let span = span!(Level::INFO, "graphql_execution");
     info!("Processing GraphQL request");
 
-    let response = async move { schema.execute(req.into_inner()).await } // (2)
+    let response = async move { schema.execute(req.into_inner()).await }
         .instrument(span.clone())
         .await;
     info!("Processing GraphQL request finished");

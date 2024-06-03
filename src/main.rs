@@ -2,7 +2,7 @@ use crate::command_line::Arguments;
 use crate::command_line::BookstoreEx;
 use crate::command_line::MigrationFolder;
 use crate::command_line::SubCommand;
-use crate::model::QueryRoot;
+use crate::graphql::Query;
 use crate::observability::metrics::{create_prometheus_recorder, track_metrics};
 use crate::observability::tracing::setup_tracer;
 use crate::routes::{graphql_handler, graphql_playground, health};
@@ -18,7 +18,7 @@ use tracing::info;
 
 mod command_line;
 mod db;
-mod model;
+mod graphql;
 mod observability;
 mod routes;
 
@@ -58,7 +58,7 @@ async fn main() {
     match args.cmd {
         // cargo run -- start-server --port 3000, visit http://localhost:3000/ to see the graphql playground
         SubCommand::StartServer { port } => {
-            let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
+            let schema = Schema::build(Query, EmptyMutation, EmptySubscription).finish();
             let prometheus_recorder = create_prometheus_recorder();
 
             let address = format!("0.0.0.0:{}", port);
