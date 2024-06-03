@@ -1,6 +1,7 @@
 # sudo docker compose -f dockers/postgres_with_jaeger/docker-compose.yaml up
 services:
   jaeger:
+    # visit http://localhost:16686/search
     image: jaegertracing/all-in-one:1.6
     container_name: jaeger
     environment:

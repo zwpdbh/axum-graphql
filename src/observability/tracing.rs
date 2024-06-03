@@ -1,6 +1,5 @@
 use opentelemetry::sdk::trace::Tracer;
 use std::env;
-use tracing_subscriber::Layer;
 
 struct JaegerConfig {
     jaeger_agent_host: String,
@@ -53,10 +52,9 @@ pub fn setup_tracer() {
     use tracing_subscriber::filter::EnvFilter;
     use tracing_subscriber::layer::SubscriberExt;
     use tracing_subscriber::util::SubscriberInitExt;
+    use tracing_subscriber::Layer;
     use tracing_subscriber::Registry;
-
-    // set trace level
-    let filter = EnvFilter::new("debug");
+    let filter = EnvFilter::new("trace");
 
     let registry = Registry::default().with(
         tracing_subscriber::fmt::layer()
