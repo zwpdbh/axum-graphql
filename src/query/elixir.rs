@@ -1,4 +1,4 @@
-use crate::graphql::format_datetime;
+use crate::query::format_datetime;
 use async_graphql::Object;
 use bigdecimal::ToPrimitive;
 use sqlx::postgres::PgRow;

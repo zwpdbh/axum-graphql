@@ -2,10 +2,11 @@ use crate::command_line::Arguments;
 use crate::command_line::BookstoreEx;
 use crate::command_line::MigrationFolder;
 use crate::command_line::SubCommand;
-use crate::graphql::Query;
 use crate::observability::metrics::{create_prometheus_recorder, track_metrics};
 use crate::observability::tracing::setup_tracer;
-use crate::routes::{graphql_handler, graphql_playground, health};
+use crate::query::Query;
+use crate::routes::graphql::{graphql_handler, graphql_playground};
+use crate::routes::health;
 use async_graphql::{EmptyMutation, EmptySubscription, Schema};
 use axum::middleware;
 use axum::{extract::Extension, routing::get, Router, Server};
@@ -18,8 +19,8 @@ use tracing::info;
 
 mod command_line;
 mod db;
-mod graphql;
 mod observability;
+mod query;
 mod routes;
 
 async fn shutdown_signal() {
@@ -57,12 +58,17 @@ async fn main() {
     let args = Arguments::parse();
     match args.cmd {
         SubCommand::StartServer { port } => {
-            let pool = sqlx::postgres::PgPool::connect(db::DB_FOR_DEV)
+            // let conn = Database::connect(db::DB_FOR_DEV)
+            //     .await
+            //     .expect("Database connection failed");
+
+            let conn = sqlx::postgres::PgPool::connect(db::DB_FOR_DEV)
                 .await
                 .unwrap();
 
+            // let state = AppState { conn };
             let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
-                .data(pool)
+                .data(conn)
                 .finish();
             let prometheus_recorder = create_prometheus_recorder();
 
@@ -70,8 +76,8 @@ async fn main() {
             info!("Service starting at address: {}", address);
 
             let app = Router::new()
-                .route("/", get(graphql_playground).post(graphql_handler))
-                .route("/health", get(health))
+                .route("/", get(health))
+                .route("/graphql", get(graphql_playground).post(graphql_handler))
                 .route("/metrics", get(move || ready(prometheus_recorder.render())))
                 .route_layer(middleware::from_fn(track_metrics))
                 .layer(Extension(schema));
@@ -105,9 +111,6 @@ async fn main() {
                     }
                     BookstoreEx::Read { v } => {
                         let _ = db::bookstore::read_book_example(&pool, v).await.unwrap();
-                    }
-                    BookstoreEx::Transaction => {
-                        let _ = db::bookstore::transaction(&pool).await.unwrap();
                     }
                 },
             }

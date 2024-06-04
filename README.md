@@ -34,3 +34,9 @@ rustc 1.72.0 (5680fa18f 2023-08-23)
 
 - [How to Build a Powerful GraphQL API with Rust](https://oliverjumpertz.com/blog/how-to-build-a-powerful-graphql-api-with-rust/)
 - [SQLx is my favorite PostgreSQL driver to use with Rust.](https://www.youtube.com/watch?v=TCERYbgvbq0)
+
+
+## How to database migration 
+
+- `cargo install sea-orm-cli`
+- `sea-orm-cli migrate init`

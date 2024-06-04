@@ -1,4 +1,4 @@
-use crate::graphql::elixir::MenuItem;
+use crate::query::elixir::MenuItem;
 use async_graphql::FieldResult;
 use async_graphql::{Context, Object, Schema};
 use async_graphql::{EmptyMutation, EmptySubscription};
